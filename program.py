@@ -9,14 +9,21 @@ import time
 import progressbar
 from PIL import Image
 
+# reduce useless logs from tensorflow
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+# nearest neighbour
+n = 5
+
+# parameter parser
 parser = argparse.ArgumentParser(
     description='Image Retrieval')
-parser.add_argument('-i1', '--input1', help='Input file name', required=True)
-# parser.add_argument('-i2', '--input2', help='Input file name', required=True)
+parser.add_argument(
+    '-i', '--image', help='Image location to search', required=True)
+
 args = parser.parse_args()
 
+# opens the tf model of vgg16
 with open("vgg16.tfmodel", mode='rb') as f:
     fileContent = f.read()
 
@@ -26,43 +33,46 @@ graph_def.ParseFromString(fileContent)
 images = tf.placeholder("float", [None, 224, 224, 3])
 
 tf.import_graph_def(graph_def, input_map={"images": images})
-print("Loaded tensorflow model")
+print("Loaded VGG16 model")
 
 graph = tf.get_default_graph()
-
-image1 = utils.load_image(args.input1)
-# image2 = utils.load_image(args.input2)
+image = utils.load_image(args.image)
 
 with tf.Session() as sess:
     init = tf.global_variables_initializer()
     sess.run(init)
     print("Model variables initialized")
 
-    batch = image1.reshape((1, 224, 224, 3))
+    batch = image.reshape((1, 224, 224, 3))
     assert batch.shape == (1, 224, 224, 3)
 
     feed_dict = {images: batch}
+    # second last layer of the model before last activation
     vec_tensor = graph.get_tensor_by_name("import/fc8/BiasAdd:0")
     vector = sess.run(vec_tensor, feed_dict=feed_dict)
+    # location of input image
     location = np.squeeze(vector)
 
+nearest_neighbours = utils.init_list(n=n)
 
-distance = sys.maxsize
-nearestFile = None
 i = 0
+# Calculating input image location with all other location of the ukbench library
+print("Calculating distance vectors...")
 for root, dirs, files in os.walk("./vectors"):
     with progressbar.ProgressBar(max_value=len(files)) as bar:
         for file in files:
             if file.endswith(".vc"):
                 imageLocation = np.loadtxt('./vectors/' + file, delimiter=',')
                 dist = np.linalg.norm(location - imageLocation)
-                if(dist < distance):
-                    distance = dist
-                    nearestFile = file
+                if(dist < utils.get_max_neighbour(neighbour_list=nearest_neighbours)):
+                    nearest_neighbours = utils.add_to_neighbours(
+                        neighbour={'filename': file[:-3] + '.jpg', 'distance': dist}, neighbour_list=nearest_neighbours)
                 i += 1
                 bar.update(i)
-print(distance)
-print(nearestFile)
-file = './images/' + nearestFile[:-3] + '.jpg'
-img = Image.open('./images/' + nearestFile[:-3] + '.jpg')
-img.show()
+
+print('Showing', n, 'closest images')
+utils.pretty_print_list(nearest_neighbours)
+
+# file = './images/' + nearestFile[:-3] + '.jpg'
+# img = Image.open('./images/' + nearestFile[:-3] + '.jpg')
+# img.show()

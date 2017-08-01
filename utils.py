@@ -1,13 +1,9 @@
 import skimage
 import skimage.io
 import skimage.transform
+import sys
 import numpy as np
-
-
-synset = [l.strip() for l in open('synset.txt').readlines()]
-
-# returns image of shape [224, 224, 3]
-# [height, width, depth]
+from operator import itemgetter
 
 
 def load_image(path):
@@ -23,22 +19,27 @@ def load_image(path):
     crop_img = img[yy: yy + short_edge, xx: xx + short_edge]
     # resize to 224, 224
     resized_img = skimage.transform.resize(crop_img, (224, 224))
-    # viewer = ImageViewer(resized_img)
-    # viewer.show()
     return resized_img
 
-# returns the top1 string
+
+def init_list(n):
+    max_size_list = []
+    for i in range(n):
+        max_size_list.append({'filename': 'null', 'distance': sys.maxsize})
+    return max_size_list
 
 
-def print_prob(prob):
-    # print prob
-    print("prob shape", prob.shape)
-    pred = np.argsort(prob)[::-1]
+def add_to_neighbours(neighbour, neighbour_list):
+    neighbour_list.append(neighbour)
+    newlist = sorted(neighbour_list, key=itemgetter('distance'))
+    newlist.pop()
+    return newlist
 
-    # Get top1 label
-    top1 = synset[pred[0]]
-    print("Top1: ", top1)
-    # Get top5 label
-    top5 = [synset[pred[i]] for i in range(5)]
-    print("Top5: ", top5)
-    return top1
+
+def get_max_neighbour(neighbour_list):
+    return neighbour_list[-1]['distance']
+
+
+def pretty_print_list(neighbour_list):
+    for i in neighbour_list:
+        print('\n', i)

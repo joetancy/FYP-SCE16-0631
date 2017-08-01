@@ -27,7 +27,7 @@ with tf.Session() as sess:
         with progressbar.ProgressBar(max_value=len(files)) as bar:
             for file in files:
                 if file.endswith(".jpg"):
-                    if (not (os.path.exists(os.path.join(root, file[:-4] + '.dat')))):
+                    if (not (os.path.exists(os.path.join(root, file[:-4] + '.vc')))):
                         print('\nCalculating for', file)
                         i += 1
                         image = utils.load_image(os.path.join(root, file))
@@ -40,7 +40,7 @@ with tf.Session() as sess:
                         location = np.squeeze(vector)
                         time.sleep(0.1)
                         file = file[:-4]
-                        file = './vectors/' + file + '.dat'
+                        file = './vectors/' + file + '.vc'
                         np.savetxt(file, location,
                                    delimiter=',', fmt="%s")
                     bar.update(i)
