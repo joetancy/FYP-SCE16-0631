@@ -4,6 +4,7 @@ import skimage.transform
 import sys
 import numpy as np
 from operator import itemgetter
+from PIL import Image
 
 
 def load_image(path):
@@ -19,6 +20,8 @@ def load_image(path):
     crop_img = img[yy: yy + short_edge, xx: xx + short_edge]
     # resize to 224, 224
     resized_img = skimage.transform.resize(crop_img, (224, 224))
+    skimage.io.imshow(resized_img)
+    skimage.io.show()
     return resized_img
 
 
