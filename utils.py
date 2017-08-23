@@ -7,7 +7,7 @@ from operator import itemgetter
 from PIL import Image
 
 
-def load_image(path):
+def loadImage(path):
     # load image
     img = skimage.io.imread(path)
     img = img / 255.0
@@ -25,24 +25,31 @@ def load_image(path):
     return resized_img
 
 
-def init_list(n):
+def initList(n):
     max_size_list = []
     for i in range(n):
         max_size_list.append({'filename': 'null', 'distance': sys.maxsize})
     return max_size_list
 
 
-def add_to_neighbours(neighbour, neighbour_list):
+def addToNeighbours(neighbour, neighbour_list):
     neighbour_list.append(neighbour)
     newlist = sorted(neighbour_list, key=itemgetter('distance'))
     newlist.pop()
     return newlist
 
 
-def get_max_neighbour(neighbour_list):
+def getMaxNeighbour(neighbour_list):
     return neighbour_list[-1]['distance']
 
 
-def pretty_print_list(neighbour_list):
+def prettyPrintList(neighbour_list):
     for i in neighbour_list:
         print('\n', i)
+
+
+def openAllImages(neighbour_list):
+    for i in neighbour_list:
+        file = './images/' + i['filename']
+        img = Image.open(file)
+        img.show()

@@ -30,7 +30,7 @@ with tf.Session() as sess:
                     if (not (os.path.exists(os.path.join(root, file[:-4] + '.vc')))):
                         print('\nCalculating for', file)
                         i += 1
-                        image = utils.load_image(os.path.join(root, file))
+                        image = utils.loadImage(os.path.join(root, file))
                         batch = image.reshape((1, 224, 224, 3))
                         assert batch.shape == (1, 224, 224, 3)
                         feed_dict = {images: batch}

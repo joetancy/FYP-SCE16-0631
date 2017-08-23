@@ -13,7 +13,7 @@ from PIL import Image
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 # nearest neighbour
-n = 5
+n = 3
 
 # parameter parser
 parser = argparse.ArgumentParser(
@@ -36,7 +36,7 @@ tf.import_graph_def(graph_def, input_map={"images": images})
 print("Loaded VGG16 model")
 
 graph = tf.get_default_graph()
-image = utils.load_image(args.image)
+image = utils.loadImage(args.image)
 
 with tf.Session() as sess:
     init = tf.global_variables_initializer()
@@ -53,7 +53,7 @@ with tf.Session() as sess:
     # location of input image
     location = np.squeeze(vector)
 
-nearest_neighbours = utils.init_list(n=n)
+nearestNeighbours = utils.initList(n)
 
 i = 0
 # Calculating input image location with all other location of the ukbench library
@@ -64,14 +64,14 @@ for root, dirs, files in os.walk("./vectors"):
             if file.endswith(".vc"):
                 imageLocation = np.loadtxt('./vectors/' + file, delimiter=',')
                 dist = np.linalg.norm(location - imageLocation)
-                if(dist < utils.get_max_neighbour(neighbour_list=nearest_neighbours)):
-                    nearest_neighbours = utils.add_to_neighbours(
-                        neighbour={'filename': file[:-3] + '.jpg', 'distance': dist}, neighbour_list=nearest_neighbours)
+                if(dist < utils.getMaxNeighbour(neighbour_list=nearestNeighbours)):
+                    nearestNeighbours = utils.addToNeighbours(
+                        neighbour={'filename': file[:-3] + '.jpg', 'distance': dist}, neighbour_list=nearestNeighbours)
                 i += 1
                 bar.update(i)
 
 print('Showing', n, 'closest images')
-utils.pretty_print_list(nearest_neighbours)
+utils.prettyPrintList(nearestNeighbours)
 
 # file = './images/' + nearestFile[:-3] + '.jpg'
 # img = Image.open('./images/' + nearestFile[:-3] + '.jpg')
