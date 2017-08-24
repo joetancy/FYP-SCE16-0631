@@ -1,5 +1,5 @@
 import tensorflow as tf
-import utils
+import imageUtilities
 import numpy as np
 import argparse
 import os
@@ -7,6 +7,7 @@ import os.path
 import sys
 import time
 import progressbar
+import ml_metrics as metrics
 from PIL import Image
 
 # reduce useless logs from tensorflow
@@ -36,7 +37,7 @@ tf.import_graph_def(graph_def, input_map={"images": images})
 print("Loaded VGG16 model")
 
 graph = tf.get_default_graph()
-image = utils.loadImage(args.image)
+image = imageUtilities.loadImage(args.image)
 
 with tf.Session() as sess:
     init = tf.global_variables_initializer()
@@ -53,26 +54,28 @@ with tf.Session() as sess:
     # location of input image
     location = np.squeeze(vector)
 
-nearestNeighbours = utils.initList(n)
+nearestNeighbours = imageUtilities.initList(n)
 
 i = 0
-# Calculating input image location with all other location of the ukbench library
-print("Calculating distance vectors...")
-for root, dirs, files in os.walk("./vectors"):
+# Measuring input image location with all other location of the ukbench library
+print("Measuring distance...")
+for root, dirs, files in os.walk("./pristineFeatures"):
     with progressbar.ProgressBar(max_value=len(files)) as bar:
         for file in files:
             if file.endswith(".vc"):
-                imageLocation = np.loadtxt('./vectors/' + file, delimiter=',')
+                imageLocation = np.loadtxt(
+                    './pristineFeatures/' + file, delimiter=',')
                 dist = np.linalg.norm(location - imageLocation)
-                if(dist < utils.getMaxNeighbour(neighbour_list=nearestNeighbours)):
-                    nearestNeighbours = utils.addToNeighbours(
+                if(dist < imageUtilities.getMaxNeighbour(neighbour_list=nearestNeighbours)):
+                    nearestNeighbours = imageUtilities.addToNeighbours(
                         neighbour={'filename': file[:-3] + '.jpg', 'distance': dist}, neighbour_list=nearestNeighbours)
                 i += 1
                 bar.update(i)
 
 print('Showing', n, 'closest images')
-utils.prettyPrintList(nearestNeighbours)
-
+print(metrics.apk(actual=['test'], predicted=['test'], k=1))
+imageUtilities.prettyPrintList(nearestNeighbours)
+imageUtilities.openAllImages(nearestNeighbours)
 # file = './images/' + nearestFile[:-3] + '.jpg'
 # img = Image.open('./images/' + nearestFile[:-3] + '.jpg')
 # img.show()

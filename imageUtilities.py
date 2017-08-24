@@ -45,11 +45,11 @@ def getMaxNeighbour(neighbour_list):
 
 def prettyPrintList(neighbour_list):
     for i in neighbour_list:
-        print('\n', i)
+        print('\n filename: ', i['filename'], ' distance: ', i['distance'])
 
 
 def openAllImages(neighbour_list):
     for i in neighbour_list:
         file = './images/' + i['filename']
-        img = Image.open(file)
-        img.show()
+        skimage.io.imshow(file)
+        skimage.io.show()

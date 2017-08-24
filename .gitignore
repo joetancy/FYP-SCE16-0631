@@ -97,3 +97,4 @@ redist/
 vgg16.tfmodel
 synset.txt
 VGG_2014_16.prototxt
+*.jpg

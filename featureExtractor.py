@@ -1,5 +1,5 @@
 import tensorflow as tf
-import utils
+import imageUtilities
 import numpy as np
 import os
 import time
@@ -23,7 +23,7 @@ with tf.Session() as sess:
     sess.run(init)
     print("Model variables initialized")
     i = 0
-    for root, dirs, files in os.walk("./images"):
+    for root, dirs, files in os.walk("./pristine"):
         with progressbar.ProgressBar(max_value=len(files)) as bar:
             for file in files:
                 if file.endswith(".jpg"):
@@ -40,7 +40,7 @@ with tf.Session() as sess:
                         location = np.squeeze(vector)
                         time.sleep(0.1)
                         file = file[:-4]
-                        file = './vectors/' + file + '.vc'
+                        file = './pristineFeatures/' + file + '.vc'
                         np.savetxt(file, location,
                                    delimiter=',', fmt="%s")
                     bar.update(i)
