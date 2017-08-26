@@ -7,7 +7,7 @@ from operator import itemgetter
 from PIL import Image
 
 
-def loadImage(path):
+def loadImage(path, display):
     # load image
     img = skimage.io.imread(path)
     img = img / 255.0
@@ -19,9 +19,11 @@ def loadImage(path):
     xx = int((img.shape[1] - short_edge) / 2)
     crop_img = img[yy: yy + short_edge, xx: xx + short_edge]
     # resize to 224, 224
-    resized_img = skimage.transform.resize(crop_img, (224, 224))
-    skimage.io.imshow(resized_img)
-    skimage.io.show()
+    resized_img = skimage.transform.resize(
+        crop_img, (224, 224), mode='constant')
+    if display:
+        skimage.io.imshow(resized_img)
+        skimage.io.show()
     return resized_img
 
 

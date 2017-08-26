@@ -22,7 +22,7 @@ if distortionType == '1':
         with progressbar.ProgressBar(max_value=len(files)) as bar:
             for file in files:
                 if file.endswith(".jpg"):
-                    print('\nDistorting for', file)
+                    # print('\Gaussian blur for', file)
                     image = skimage.io.imread(os.path.join(root, file))
                     image = skimage.util.img_as_float(image, force_copy=False)
                     image = filters.gaussian(image, sigma=3, truncate=2)
@@ -39,7 +39,7 @@ elif distortionType == '2':
         with progressbar.ProgressBar(max_value=len(files)) as bar:
             for file in files:
                 if file.endswith(".jpg"):
-                    print('\nDistorting for', file)
+                    # print('\Gaussian noise', file)
                     image = skimage.io.imread(os.path.join(root, file))
                     image = skimage.util.img_as_float(image, force_copy=False)
                     image = utils.random_noise(
@@ -57,7 +57,7 @@ elif distortionType == '3':
         with progressbar.ProgressBar(max_value=len(files)) as bar:
             for file in files:
                 if file.endswith(".jpg"):
-                    print('\nDistorting for', file)
+                    # print('\JPEG compression for', file)
                     image = skimage.io.imread(os.path.join(root, file))
                     image = skimage.util.img_as_float(image, force_copy=False)
                     time.sleep(0.1)

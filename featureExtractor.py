@@ -6,6 +6,12 @@ import time
 import progressbar
 import os.path
 
+# reduce useless logs from tensorflow
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+imageDir = input('Image directory: ')
+featuresDir = input('Features directory: ')
+
 with open("vgg16.tfmodel", mode='rb') as f:
     fileContent = f.read()
 
@@ -23,14 +29,19 @@ with tf.Session() as sess:
     sess.run(init)
     print("Model variables initialized")
     i = 0
-    for root, dirs, files in os.walk("./pristine"):
-        with progressbar.ProgressBar(max_value=len(files)) as bar:
+
+    list = os.listdir('./' + featuresDir)
+    number_files = len(list)
+    print('Number of feature files generated:', number_files)
+
+    for root, dirs, files in os.walk('./' + imageDir):
+        with progressbar.ProgressBar(max_value=len(files) - number_files) as bar:
             for file in files:
                 if file.endswith(".jpg"):
-                    if (not (os.path.exists(os.path.join(root, file[:-4] + '.vc')))):
-                        print('\nCalculating for', file)
+                    if (not (os.path.exists(os.path.join('./' + featuresDir + '/' + file[:-4] + '.vc')))):
                         i += 1
-                        image = utils.loadImage(os.path.join(root, file))
+                        image = imageUtilities.loadImage(
+                            os.path.join(root, file), False)
                         batch = image.reshape((1, 224, 224, 3))
                         assert batch.shape == (1, 224, 224, 3)
                         feed_dict = {images: batch}
@@ -40,7 +51,9 @@ with tf.Session() as sess:
                         location = np.squeeze(vector)
                         time.sleep(0.1)
                         file = file[:-4]
-                        file = './pristineFeatures/' + file + '.vc'
+                        file = './' + featuresDir + '/' + file + '.vc'
                         np.savetxt(file, location,
                                    delimiter=',', fmt="%s")
+                    else:
+                        i += 1
                     bar.update(i)

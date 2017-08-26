@@ -37,7 +37,7 @@ tf.import_graph_def(graph_def, input_map={"images": images})
 print("Loaded VGG16 model")
 
 graph = tf.get_default_graph()
-image = imageUtilities.loadImage(args.image)
+image = imageUtilities.loadImage(args.image, True)
 
 with tf.Session() as sess:
     init = tf.global_variables_initializer()
