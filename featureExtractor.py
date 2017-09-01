@@ -7,7 +7,7 @@ import progressbar
 import os.path
 
 # reduce useless logs from tensorflow
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+# os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 imageDir = input('Image directory: ')
 featuresDir = input('Features directory: ')
@@ -49,7 +49,6 @@ with tf.Session() as sess:
                             "import/fc8/BiasAdd:0")
                         vector = sess.run(vec_tensor, feed_dict=feed_dict)
                         location = np.squeeze(vector)
-                        time.sleep(0.1)
                         file = file[:-4]
                         file = './' + featuresDir + '/' + file + '.vc'
                         np.savetxt(file, location,
