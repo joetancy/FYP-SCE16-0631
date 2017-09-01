@@ -99,3 +99,4 @@ synset.txt
 VGG_2014_16.prototxt
 *.jpg
 *.vc
+cuda/
