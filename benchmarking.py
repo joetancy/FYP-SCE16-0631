@@ -7,48 +7,78 @@ import progressbar
 import ml_metrics as metrics
 import imageUtilities
 
+
+def buildAllList(queryDir):
+    allFileList = []
+    for root, dirs, files in os.walk('./' + queryDir):
+        for file in files:
+            allFileList.append(int(file[:-3]))
+    return allFileList
+
+
+def buildQueryList(queryDir):
+    queryList = []
+    for root, dirs, files in os.walk('./' + queryDir):
+        for file in files:
+            if int(file[:-3]) % 100 == 0:
+                queryList.append(int(file[:-3]))
+    return queryList
+
+
+def buildRelevantList(queryDir, file):
+    relevantList = []
+    allList = buildAllList(queryDir)
+    length = len(allList)
+    index = 0
+    for i in range(length):
+        if allList[i] == file:
+            index = i + 1
+            break
+    while index < length:
+        if (allList[index] % 100) != 0:
+            relevantList.append(allList[index])
+        else:
+            break
+        index += 1
+    return relevantList
+
+
+def buildReferenceList(queryDir):
+    referenceList = [x for x in buildAllList(
+        queryDir) if x not in buildQueryList(queryDir)]
+    return referenceList
+
+
 queryDir = input('Query directory: ')
 databaseDir = input('Database directory: ')
 
-i = 0
+queryList = buildQueryList(queryDir)
+referenceList = buildReferenceList(queryDir)
 
-for root, dirs, files in os.walk('./' + queryDir):
-    with progressbar.ProgressBar(max_value=len(files)) as bar:
-        for queryFile in files:
-            relevantFiles = []
-            retrievedFiles = imageUtilities.initList(3)
-            if queryFile.endswith('.vc'):
-                fileName = int(queryFile[7:-4])
-                fileMod = int(fileName) % 4
-                queryFeature = np.loadtxt(
-                    './' + queryDir + '/' + queryFile, delimiter=',')
-                for j in range(4):
-                    if j < fileMod:
-                        relevantFiles.append(fileName - (fileMod - j))
-                    elif j > fileMod:
-                        relevantFiles.append(fileName + (j - fileMod))
-                for root, dirs, files in os.walk('./' + databaseDir):
-                    with progressbar.ProgressBar(max_value=len(files)) as bar2:
-                        j = 0
-                        for databaseFile in files:
-                            if databaseFile.endswith('.vc') and databaseFile != queryFile:
-                                databaseFeature = np.loadtxt(
-                                    './' + databaseDir + '/' + databaseFile, delimiter=',')
-                                dist = np.linalg.norm(
-                                    databaseFeature - queryFeature)
-                                if(dist < imageUtilities.getMaxNeighbour(retrievedFiles)):
-                                    retrievedFiles = imageUtilities.addToNeighbours(
-                                        neighbour={'filename': databaseFile[7:-3], 'distance': dist}, neighbour_list=retrievedFiles)
-                                j += 1
-                                bar2.update(j)
-                        retrievedFeatures = []
-                        for k in retrievedFiles:
-                            retrievedFeatures.append(int(k['filename']))
-                        apk = metrics.apk(actual=relevantFiles,
-                                          predicted=retrievedFeatures, k=3)
-                        print('\n')
-                        print(relevantFiles)
-                        print(retrievedFeatures)
-                        print('APK: ', apk)
-            i += 1
-            bar.update(i)
+listOfReleventList = []
+listOfRetrievedList = []
+
+bar = progressbar.ProgressBar(redirect_stdout=True)
+for i in bar(range(len(queryList))):
+    queryImage = np.loadtxt('./' + queryDir + '/' +
+                            str(queryList[i]) + '.vc', delimiter=',')
+    relevantList = buildRelevantList(queryDir, queryList[i])
+    nearestNeighbours = imageUtilities.initList(len(relevantList))
+    for j in range(len(referenceList)):
+        databaseImage = np.loadtxt(
+            './' + databaseDir + '/' + str(referenceList[j]) + '.vc', delimiter=',')
+        distance = np.linalg.norm(databaseImage - queryImage)
+        if (distance < imageUtilities.getMaxNeighbour(nearestNeighbours)):
+            nearestNeighbours = imageUtilities.addToNeighbours(
+                neighbour={'filename': referenceList[j], 'distance': distance}, neighbour_list=nearestNeighbours)
+    retrievedList = []
+    for k in nearestNeighbours:
+        retrievedList.append(int(k['filename']))
+    apk = metrics.apk(actual=relevantList, predicted=retrievedList)
+    listOfReleventList.append(relevantList)
+    # print(relevantList)
+    listOfRetrievedList.append(retrievedList)
+    # print(retrievedList)
+    # print('APK: ', apk)
+mapk = metrics.mapk(actual=listOfReleventList, predicted=listOfRetrievedList)
+print('MAPK for', queryDir, 'against', databaseDir, 'is', mapk)
