@@ -1,14 +1,17 @@
-import tensorflow as tf
-import imageUtilities
-import numpy as np
 import argparse
 import os
 import os.path
 import sys
 import time
-import progressbar
+
 import ml_metrics as metrics
+import numpy as np
+import progressbar
+import skimage.io
+import tensorflow as tf
 from PIL import Image
+
+import imageUtilities
 
 # reduce useless logs from tensorflow
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -39,6 +42,9 @@ print("Loaded VGG16 model")
 graph = tf.get_default_graph()
 image = imageUtilities.loadImage(args.image, True)
 
+# for i in tf.get_default_graph().get_operations():
+#     print(i.name)
+
 with tf.Session() as sess:
     init = tf.global_variables_initializer()
     sess.run(init)
@@ -49,10 +55,12 @@ with tf.Session() as sess:
 
     feed_dict = {images: batch}
     # second last layer of the model before last activation
-    vec_tensor = graph.get_tensor_by_name("import/fc8/BiasAdd:0")
+    vec_tensor = graph.get_tensor_by_name("import/fc7/BiasAdd:0")
     vector = sess.run(vec_tensor, feed_dict=feed_dict)
+    print(vector.shape)
     # location of input image
     location = np.squeeze(vector)
+    print(location.shape)
 
 nearestNeighbours = imageUtilities.initList(n)
 
@@ -68,14 +76,14 @@ for root, dirs, files in os.walk("./pristineFeatures"):
                 dist = np.linalg.norm(location - imageLocation)
                 if(dist < imageUtilities.getMaxNeighbour(nearestNeighbours)):
                     nearestNeighbours = imageUtilities.addToNeighbours(
-                        neighbour={'filename': file[:-3] + '.jpg', 'distance': dist}, neighbour_list=nearestNeighbours)
+                        {'filename': file[:-3] + '.jpg', 'distance': dist},
+                        nearestNeighbours)
                 i += 1
                 bar.update(i)
 
 print('Showing', n, 'closest images')
-print(metrics.apk(actual=['test'], predicted=['test'], k=1))
 imageUtilities.prettyPrintList(nearestNeighbours)
-imageUtilities.openAllImages(nearestNeighbours)
+imageUtilities.openAllImages(nearestNeighbours, 'ukbench')
 # file = './images/' + nearestFile[:-3] + '.jpg'
 # img = Image.open('./images/' + nearestFile[:-3] + '.jpg')
 # img.show()

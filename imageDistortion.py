@@ -12,7 +12,10 @@ imageDir = input('Image directory: ')
 saveImageDir = input('Save image directory: ')
 
 distortionType = input(
-    '1. Gaussian Blur\n2. Gaussian Noise\n3. JPEG Compression\nEnter your choice: ')
+    '1. Gaussian Blur\n'
+    '2. Gaussian Noise\n'
+    '3. JPEG Compression\n'
+    'Enter your choice: ')
 
 if distortionType == '1':
     print('Gaussian Blur\n')

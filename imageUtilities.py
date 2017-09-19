@@ -1,9 +1,10 @@
+import sys
+from operator import itemgetter
+
+import numpy as np
 import skimage
 import skimage.io
 import skimage.transform
-import sys
-import numpy as np
-from operator import itemgetter
 from PIL import Image
 
 
@@ -50,8 +51,8 @@ def prettyPrintList(neighbour_list):
         print('\n filename: ', i['filename'], ' distance: ', i['distance'])
 
 
-def openAllImages(neighbour_list):
+def openAllImages(neighbour_list, filedir):
     for i in neighbour_list:
-        file = './images/' + i['filename']
+        file = './' + filedir + '/' + i['filename']
         skimage.io.imshow(file)
         skimage.io.show()
