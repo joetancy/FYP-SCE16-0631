@@ -57,10 +57,8 @@ with tf.Session() as sess:
     # second last layer of the model before last activation
     vec_tensor = graph.get_tensor_by_name("import/fc7/BiasAdd:0")
     vector = sess.run(vec_tensor, feed_dict=feed_dict)
-    print(vector.shape)
     # location of input image
     location = np.squeeze(vector)
-    print(location.shape)
 
 nearestNeighbours = imageUtilities.initList(n)
 
