@@ -5,11 +5,12 @@ import os
 import time
 import progressbar
 import os.path
+from imageDistortion import imageDirList
 
 # reduce useless logs from tensorflow
 # os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-imageDirList = ['holidays', 'gaussian', 'noise', 'jpeg']
+imageDirList = imageDirList
 
 # imageDir = input('Image directory: ')
 # featuresDir = imageDir + 'Features'
@@ -30,18 +31,16 @@ for directories in imageDirList:
     print(directories)
     imageDir = directories
     featuresDir = imageDir + 'Features'
+    if not os.path.exists(featuresDir):
+        os.makedirs(featuresDir)
     with tf.Session() as sess:
         init = tf.global_variables_initializer()
         sess.run(init)
         print("Model variables initialized")
         i = 0
 
-        list = os.listdir('./' + featuresDir)
-        number_files = len(list)
-        print('Number of feature files generated:', number_files)
-
         for root, dirs, files in os.walk('./' + imageDir):
-            with progressbar.ProgressBar(max_value=len(files) - number_files) as bar:
+            with progressbar.ProgressBar(max_value=len(files)) as bar:
                 for file in files:
                     if file.endswith(".jpg"):
                         if (not (os.path.exists(os.path.join('./' + featuresDir + '/' + file[:-4] + '.vc')))):
