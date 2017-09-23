@@ -12,8 +12,6 @@ from imageDistortion import imageDirList
 
 imageDirList = imageDirList
 
-# imageDir = input('Image directory: ')
-# featuresDir = imageDir + 'Features'
 
 with open("vgg16.tfmodel", mode='rb') as f:
     fileContent = f.read()
