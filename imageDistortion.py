@@ -43,8 +43,8 @@ def worker(file, root, imageDirList, distortParams):
     workerJPEG(file, root, imageDirList, distortParams)
 
 
-imageDirList = ['gaussian5', 'noise01', 'jpeg15']
-distortParams = [5, 0.1, 15]
+imageDirList = ['gaussian6', 'noise015', 'jpeg10']
+distortParams = [6, 0.15, 10]
 
 if __name__ == '__main__':
 
@@ -55,5 +55,5 @@ if __name__ == '__main__':
     i = 0
 
     for root, dirs, files in os.walk('./holidays'):
-        Parallel(n_jobs=-1, verbose=5)(delayed(worker)(
+        Parallel(n_jobs=-1, verbose=10)(delayed(worker)(
             file, root, imageDirList, distortParams) for file in files)

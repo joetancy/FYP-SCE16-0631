@@ -81,8 +81,6 @@ def workerJPEG(image, distortParams):
     shutil.rmtree('./jpegthumbs')
 
 
-distortParams = [25, 20, 15, 10, 5]
-
 if __name__ == '__main__':
     image = imageUtilities.loadImage(args.image, False)
     distortParams = [3, 4, 5, 6, 7]
