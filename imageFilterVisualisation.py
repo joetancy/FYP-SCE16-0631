@@ -29,7 +29,7 @@ args = parser.parse_args()
 
 
 def plotNNFilter(units):
-    filters = 64
+    filters = 9
     ncol = math.ceil(math.sqrt(filters))
     nrow = ncol
     plt.figure(figsize=(ncol + 1, nrow + 1))
@@ -37,7 +37,7 @@ def plotNNFilter(units):
                            wspace=0.0, hspace=0.0,
                            top=1. - 0.5 / (nrow + 1), bottom=0.5 / (nrow + 1),
                            left=0.5 / (ncol + 1), right=1 - 0.5 / (ncol + 1))
-    for i in range(64):
+    for i in range(filters):
         ax1 = plt.subplot(gs[i])
         ax1.set_xticklabels([])
         ax1.set_yticklabels([])
@@ -61,8 +61,8 @@ print("Loaded VGG16 model")
 graph = tf.get_default_graph()
 image = imageUtilities.loadImage(args.image, False)
 
-for i in tf.get_default_graph().get_operations():
-    print(i.name)
+# for i in tf.get_default_graph().get_operations():
+#     print(i.name)
 
 with tf.Session() as sess:
     init = tf.global_variables_initializer()
@@ -73,33 +73,32 @@ with tf.Session() as sess:
     assert batch.shape == (1, 224, 224, 3)
 
     feed_dict = {images: batch}
-    # second last layer of the model before last activation
-    # vec_tensor = graph.get_tensor_by_name("import/conv1_1/Relu:0")
+    vec_tensor = graph.get_tensor_by_name("import/conv1_1/Relu:0")
+    vector = sess.run(vec_tensor, feed_dict=feed_dict)
+    vector = np.squeeze(vector)
+    plotNNFilter(vector)
+
+    # vec_tensor = graph.get_tensor_by_name("import/conv1_2/Relu:0")
     # vector = sess.run(vec_tensor, feed_dict=feed_dict)
     # vector = np.squeeze(vector)
     # plotNNFilter(vector)
 
-    vec_tensor = graph.get_tensor_by_name("import/conv1_2/Relu:0")
-    vector = sess.run(vec_tensor, feed_dict=feed_dict)
-    vector = np.squeeze(vector)
-    plotNNFilter(vector)
+    # vec_tensor = graph.get_tensor_by_name("import/conv2_2/Relu:0")
+    # vector = sess.run(vec_tensor, feed_dict=feed_dict)
+    # vector = np.squeeze(vector)
+    # plotNNFilter(vector)
 
-    vec_tensor = graph.get_tensor_by_name("import/conv2_2/Relu:0")
-    vector = sess.run(vec_tensor, feed_dict=feed_dict)
-    vector = np.squeeze(vector)
-    plotNNFilter(vector)
+    # vec_tensor = graph.get_tensor_by_name("import/conv3_3/Relu:0")
+    # vector = sess.run(vec_tensor, feed_dict=feed_dict)
+    # vector = np.squeeze(vector)
+    # plotNNFilter(vector)
 
-    vec_tensor = graph.get_tensor_by_name("import/conv3_3/Relu:0")
-    vector = sess.run(vec_tensor, feed_dict=feed_dict)
-    vector = np.squeeze(vector)
-    plotNNFilter(vector)
+    # vec_tensor = graph.get_tensor_by_name("import/conv4_3/Relu:0")
+    # vector = sess.run(vec_tensor, feed_dict=feed_dict)
+    # vector = np.squeeze(vector)
+    # plotNNFilter(vector)
 
-    vec_tensor = graph.get_tensor_by_name("import/conv4_3/Relu:0")
-    vector = sess.run(vec_tensor, feed_dict=feed_dict)
-    vector = np.squeeze(vector)
-    plotNNFilter(vector)
-
-    vec_tensor = graph.get_tensor_by_name("import/conv5_3/Relu:0")
-    vector = sess.run(vec_tensor, feed_dict=feed_dict)
-    vector = np.squeeze(vector)
-    plotNNFilter(vector)
+    # vec_tensor = graph.get_tensor_by_name("import/conv5_3/Relu:0")
+    # vector = sess.run(vec_tensor, feed_dict=feed_dict)
+    # vector = np.squeeze(vector)
+    # plotNNFilter(vector)

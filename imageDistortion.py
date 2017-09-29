@@ -16,7 +16,7 @@ def workerGaussian(file, root, imageDirList, distortParams):
     image = skimage.io.imread(os.path.join(root, file))
     image = skimage.util.img_as_float(image, force_copy=False)
     image = filters.gaussian(
-        image, sigma=distortParams[0], truncate=2)
+        image, sigma=distortParams[0], truncate=3)
     skimage.io.imsave(
         './' + imageDirList[0] + '/' + file, image)
 
@@ -43,8 +43,8 @@ def worker(file, root, imageDirList, distortParams):
     workerJPEG(file, root, imageDirList, distortParams)
 
 
-imageDirList = ['gaussian6', 'noise015', 'jpeg10']
-distortParams = [6, 0.15, 10]
+imageDirList = ['gaussian7', 'noise020', 'jpeg5']
+distortParams = [7, 0.2, 5]
 
 if __name__ == '__main__':
 

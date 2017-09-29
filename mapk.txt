@@ -27,3 +27,7 @@ MAPK for jpeg15Features against holidaysFeatures is 0.621390646259
 MAPK for gaussian6Features against holidaysFeatures is 0.387868820862
 MAPK for noise015Features against holidaysFeatures is 0.0276450680272
 MAPK for jpeg10Features against holidaysFeatures is 0.594451235828
+
+MAPK for gaussian7Features against holidaysFeatures is 0.321819444444
+MAPK for noise020Features against holidaysFeatures is 0.0156349858277
+MAPK for jpeg5Features against holidaysFeatures is 0.498261342593

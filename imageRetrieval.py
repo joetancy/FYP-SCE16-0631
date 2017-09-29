@@ -72,7 +72,7 @@ for root, dirs, files in os.walk("./pristineFeatures"):
                 imageLocation = np.loadtxt(
                     './pristineFeatures/' + file, delimiter=',')
                 dist = np.linalg.norm(location - imageLocation)
-                if(dist < imageUtilities.getMaxNeighbour(nearestNeighbours)):
+                if dist < imageUtilities.getMaxNeighbour(nearestNeighbours):
                     nearestNeighbours = imageUtilities.addToNeighbours(
                         {'filename': file[:-3] + '.jpg', 'distance': dist},
                         nearestNeighbours)
